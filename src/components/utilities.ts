@@ -85,7 +85,7 @@ function flatten(
     return [
       ...acc,
       { ...item, parentId, depth, index },
-      ...flatten(item.children, item.id, depth + 1)
+      ...flatten(item.nested, item.id, depth + 1)
     ];
   }, []);
 }
@@ -95,20 +95,20 @@ export function flattenTree(items: TreeItems): FlattenedItem[] {
 }
 
 export function buildTree(flattenedItems: FlattenedItem[]): TreeItems {
-  const root: TreeItem = { id: "root", children: [] };
+  const root: TreeItem = { id: "root", nested: [] };
   const nodes: Record<string, TreeItem> = { [root.id]: root };
-  const items = flattenedItems.map((item) => ({ ...item, children: [] }));
+  const items = flattenedItems.map((item) => ({ ...item, nested: [] }));
 
   for (const item of items) {
-    const { id, children } = item;
+    const { id, nested } = item;
     const parentId = item.parentId ?? root.id;
     const parent = nodes[parentId] ?? findItem(items, parentId);
 
-    nodes[id] = { id, children };
-    parent.children.push(item);
+    nodes[id] = { id, nested };
+    parent.nested.push(item);
   }
 
-  return root.children;
+  return root.nested;
 }
 
 export function findItem(items: TreeItem[], itemId: string) {
@@ -120,14 +120,14 @@ export function findItemDeep(
   itemId: string
 ): TreeItem | undefined {
   for (const item of items) {
-    const { id, children } = item;
+    const { id, nested } = item;
 
     if (id === itemId) {
       return item;
     }
 
-    if (children.length) {
-      const child = findItemDeep(children, itemId);
+    if (nested.length) {
+      const child = findItemDeep(nested, itemId);
 
       if (child) {
         return child;
@@ -146,8 +146,8 @@ export function removeItem(items: TreeItems, id: string) {
       continue;
     }
 
-    if (item.children.length) {
-      item.children = removeItem(item.children, id);
+    if (item.nested.length) {
+      item.nested = removeItem(item.nested, id);
     }
 
     newItems.push(item);
@@ -168,8 +168,8 @@ export function setProperty(
       continue;
     }
 
-    if (item.children.length) {
-      item.children = setProperty(item.children, id, property, setter);
+    if (item.nested.length) {
+      item.nested = setProperty(item.nested, id, property, setter);
     }
   }
 
@@ -177,9 +177,9 @@ export function setProperty(
 }
 
 function countChildren(items: TreeItem[], count = 0): number {
-  return items.reduce((acc, { children }) => {
-    if (children.length) {
-      return countChildren(children, acc + 1);
+  return items.reduce((acc, { nested }) => {
+    if (nested.length) {
+      return countChildren(nested, acc + 1);
     }
 
     return acc + 1;
@@ -193,7 +193,7 @@ export function getChildCount(items: TreeItems, id: string) {
 
   const item = findItemDeep(items, id);
 
-  return item ? countChildren(item.children) : 0;
+  return item ? countChildren(item.nested) : 0;
 }
 
 export function removeChildrenOf(items: FlattenedItem[], ids: string[]) {
@@ -201,7 +201,7 @@ export function removeChildrenOf(items: FlattenedItem[], ids: string[]) {
 
   return items.filter((item) => {
     if (item.parentId && excludeParentIds.includes(item.parentId)) {
-      if (item.children.length) {
+      if (item.nested.length) {
         excludeParentIds.push(item.id);
       }
       return false;

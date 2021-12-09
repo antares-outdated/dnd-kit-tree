@@ -1,8 +1,9 @@
 import React, { forwardRef } from "react";
 import classNames from "classnames";
-
-import { Action, Handle, Remove } from "../../components";
 import styles from "./TreeItem.module.css";
+import { Handle } from "../Handle/Handle";
+import { Action } from "../Action/Action";
+import { Remove } from "../Remove/Remove";
 
 const collapseIcon = (
   <svg width="10" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 70 41">

@@ -1,8 +1,7 @@
 import React from "react";
+import { Action } from "../Action/Action";
 
-import { Action, ActionProps } from "../Action";
-
-export function Handle(props: ActionProps) {
+export function Handle(props: any) {
   return (
     <Action cursor="grab" data-cypress="draggable-handle" {...props}>
       <svg viewBox="0 0 20 20" width="12">

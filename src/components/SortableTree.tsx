@@ -34,32 +34,32 @@ import {
   setProperty,
 } from "./utilities";
 import type { FlattenedItem, SensorContext, TreeItems } from "./types";
-import { sortableTreeKeyboardCoordinates } from "./keyboardCoordinates";
-import { TreeItem, SortableTreeItem } from "./";
+import { SortableTreeItem } from "./TreeItem/SortableTreeItem";
+import { TreeItem } from "./TreeItem/TreeItem";
 
 const initialItems: TreeItems = [
   {
     id: "Home",
-    children: [],
+    nested: [],
   },
   {
     id: "Collections",
-    children: [
-      { id: "Spring", children: [] },
-      { id: "Summer", children: [] },
-      { id: "Fall", children: [] },
-      { id: "Winter", children: [] },
+    nested: [
+      { id: "Spring", nested: [] },
+      { id: "Summer", nested: [] },
+      { id: "Fall", nested: [] },
+      { id: "Winter", nested: [] },
     ],
   },
   {
     id: "About Us",
-    children: [],
+    nested: [],
   },
   {
     id: "My Account",
-    children: [
-      { id: "Addresses", children: [] },
-      { id: "Order History", children: [] },
+    nested: [
+      { id: "Addresses", nested: [] },
+      { id: "Order History", nested: [] },
     ],
   },
 ];
@@ -95,8 +95,8 @@ export default function SortableTree({
   const flattenedItems = useMemo(() => {
     const flattenedTree = flattenTree(items);
     const collapsedItems = flattenedTree.reduce<string[]>(
-      (acc, { children, collapsed, id }) =>
-        collapsed && children.length ? [...acc, id] : acc,
+      (acc, { nested, collapsed, id }) =>
+        collapsed && nested.length ? [...acc, id] : acc,
       []
     );
 
@@ -119,15 +119,8 @@ export default function SortableTree({
     items: flattenedItems,
     offset: offsetLeft,
   });
-  const [coordinateGetter] = useState(() =>
-    sortableTreeKeyboardCoordinates(sensorContext, indentationWidth)
-  );
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter,
-    })
-  );
+
+  const sensors = useSensors(useSensor(PointerSensor));
 
   const sortedIds = useMemo(
     () => flattenedItems.map(({ id }) => id),
@@ -157,7 +150,7 @@ export default function SortableTree({
       onDragCancel={handleDragCancel}
     >
       <SortableContext items={sortedIds} strategy={verticalListSortingStrategy}>
-        {flattenedItems.map(({ id, children, collapsed, depth }) => (
+        {flattenedItems.map(({ id, nested, collapsed, depth }) => (
           <SortableTreeItem
             key={id}
             id={id}
@@ -165,9 +158,9 @@ export default function SortableTree({
             depth={id === activeId && projected ? projected.depth : depth}
             indentationWidth={indentationWidth}
             indicator={indicator}
-            collapsed={Boolean(collapsed && children.length)}
+            collapsed={Boolean(collapsed && nested.length)}
             onCollapse={
-              collapsible && children.length
+              collapsible && nested.length
                 ? () => handleCollapse(id)
                 : undefined
             }
