@@ -1,4 +1,4 @@
-import React, { forwardRef, HTMLAttributes } from "react";
+import React, { forwardRef } from "react";
 import classNames from "classnames";
 
 import { Action, Handle, Remove } from "../../components";
@@ -10,24 +10,7 @@ const collapseIcon = (
   </svg>
 );
 
-export interface Props extends HTMLAttributes<HTMLLIElement> {
-  childCount?: number;
-  clone?: boolean;
-  collapsed?: boolean;
-  depth: number;
-  disableInteraction?: boolean;
-  disableSelection?: boolean;
-  ghost?: boolean;
-  handleProps?: any;
-  indicator?: boolean;
-  indentationWidth: number;
-  value: string;
-  onCollapse?(): void;
-  onRemove?(): void;
-  wrapperRef?(node: HTMLLIElement): void;
-}
-
-export const TreeItem = forwardRef<HTMLDivElement, Props>(
+export const TreeItem = forwardRef<any, any>(
   (
     {
       childCount,
@@ -60,11 +43,9 @@ export const TreeItem = forwardRef<HTMLDivElement, Props>(
           disableInteraction && styles.disableInteraction
         )}
         ref={wrapperRef}
-        style={
-          {
-            "--spacing": `${indentationWidth * depth}px`
-          } as React.CSSProperties
-        }
+        style={{
+          "--spacing": `${indentationWidth * depth}px`,
+        }}
         {...props}
       >
         <div className={styles.TreeItem} ref={ref} style={style}>

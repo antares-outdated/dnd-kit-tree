@@ -16,12 +16,12 @@ import {
   LayoutMeasuringStrategy,
   DropAnimation,
   defaultDropAnimation,
-  Modifier
+  Modifier,
 } from "@dnd-kit/core";
 import {
   SortableContext,
   arrayMove,
-  verticalListSortingStrategy
+  verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 
 import {
@@ -31,7 +31,7 @@ import {
   getChildCount,
   removeItem,
   removeChildrenOf,
-  setProperty
+  setProperty,
 } from "./utilities";
 import type { FlattenedItem, SensorContext, TreeItems } from "./types";
 import { sortableTreeKeyboardCoordinates } from "./keyboardCoordinates";
@@ -40,7 +40,7 @@ import { TreeItem, SortableTreeItem } from "./";
 const initialItems: TreeItems = [
   {
     id: "Home",
-    children: []
+    children: [],
   },
   {
     id: "Collections",
@@ -48,37 +48,37 @@ const initialItems: TreeItems = [
       { id: "Spring", children: [] },
       { id: "Summer", children: [] },
       { id: "Fall", children: [] },
-      { id: "Winter", children: [] }
-    ]
+      { id: "Winter", children: [] },
+    ],
   },
   {
     id: "About Us",
-    children: []
+    children: [],
   },
   {
     id: "My Account",
     children: [
       { id: "Addresses", children: [] },
-      { id: "Order History", children: [] }
-    ]
-  }
+      { id: "Order History", children: [] },
+    ],
+  },
 ];
 
 const layoutMeasuring: Partial<LayoutMeasuring> = {
-  strategy: LayoutMeasuringStrategy.Always
+  strategy: LayoutMeasuringStrategy.Always,
 };
 
 const dropAnimation: DropAnimation = {
   ...defaultDropAnimation,
-  dragSourceOpacity: 0.5
+  dragSourceOpacity: 0.5,
 };
 
 interface Props {
-  collapsible?: boolean;
+  collapsible?: any;
   defaultItems?: TreeItems;
   indentationWidth?: number;
-  indicator?: boolean;
-  removable?: boolean;
+  indicator?: any;
+  removable?: any;
 }
 
 export default function SortableTree({
@@ -86,7 +86,7 @@ export default function SortableTree({
   defaultItems = initialItems,
   indicator,
   indentationWidth = 50,
-  removable
+  removable,
 }: Props) {
   const [items, setItems] = useState(() => defaultItems);
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -117,7 +117,7 @@ export default function SortableTree({
       : null;
   const sensorContext: SensorContext = useRef({
     items: flattenedItems,
-    offset: offsetLeft
+    offset: offsetLeft,
   });
   const [coordinateGetter] = useState(() =>
     sortableTreeKeyboardCoordinates(sensorContext, indentationWidth)
@@ -125,13 +125,14 @@ export default function SortableTree({
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
-      coordinateGetter
+      coordinateGetter,
     })
   );
 
-  const sortedIds = useMemo(() => flattenedItems.map(({ id }) => id), [
-    flattenedItems
-  ]);
+  const sortedIds = useMemo(
+    () => flattenedItems.map(({ id }) => id),
+    [flattenedItems]
+  );
   const activeItem = activeId
     ? flattenedItems.find(({ id }) => id === activeId)
     : null;
@@ -139,7 +140,7 @@ export default function SortableTree({
   useEffect(() => {
     sensorContext.current = {
       items: flattenedItems,
-      offset: offsetLeft
+      offset: offsetLeft,
     };
   }, [flattenedItems, offsetLeft]);
 
@@ -244,8 +245,8 @@ export default function SortableTree({
   }
 
   function handleCollapse(id: string) {
-    setItems((items) =>
-      setProperty(items, id, "collapsed", (value) => {
+    setItems((items: any) =>
+      setProperty(items, id, "collapsed", (value: any) => {
         console.log(value);
         return !value;
       })
@@ -256,6 +257,6 @@ export default function SortableTree({
 const adjustTranslate: Modifier = ({ transform }) => {
   return {
     ...transform,
-    y: transform.y - 25
+    y: transform.y - 25,
   };
 };

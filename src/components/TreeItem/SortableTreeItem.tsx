@@ -2,19 +2,15 @@ import React, { CSSProperties } from "react";
 import { AnimateLayoutChanges, useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
-import { TreeItem, Props as TreeItemProps } from "./TreeItem";
+import { TreeItem } from "./TreeItem";
 import { iOS } from "../utilities";
-
-interface Props extends TreeItemProps {
-  id: string;
-}
 
 const animateLayoutChanges: AnimateLayoutChanges = ({
   isSorting,
-  wasSorting
+  wasSorting,
 }) => (isSorting || wasSorting ? false : true);
 
-export function SortableTreeItem({ id, depth, ...props }: Props) {
+export function SortableTreeItem({ id, depth, ...props }: any) {
   const {
     attributes,
     isDragging,
@@ -23,14 +19,13 @@ export function SortableTreeItem({ id, depth, ...props }: Props) {
     setDraggableNodeRef,
     setDroppableNodeRef,
     transform,
-    transition
+    transition,
   } = useSortable({
     id,
-    animateLayoutChanges
+    animateLayoutChanges,
   });
   const style: CSSProperties = {
     transform: CSS.Translate.toString(transform),
-    transition
   };
 
   return (
@@ -44,7 +39,7 @@ export function SortableTreeItem({ id, depth, ...props }: Props) {
       disableInteraction={isSorting}
       handleProps={{
         ...attributes,
-        ...listeners
+        ...listeners,
       }}
       {...props}
     />

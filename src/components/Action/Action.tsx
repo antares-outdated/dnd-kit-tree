@@ -17,14 +17,14 @@ export function Action({ active, className, cursor, style, ...props }: Props) {
       {...props}
       className={classNames(styles.Action, className)}
       tabIndex={0}
-      style={
-        {
-          ...style,
-          cursor,
-          "--fill": active?.fill,
-          "--background": active?.background
-        } as CSSProperties
-      }
+      // style={
+      //   {
+      //     ...style,
+      //     cursor,
+      //     "--fill": active?.fill,
+      //     "--background": active?.background
+      //   } as CSSProperties
+      // }
     />
   );
 }

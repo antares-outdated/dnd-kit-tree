@@ -156,11 +156,11 @@ export function removeItem(items: TreeItems, id: string) {
   return newItems;
 }
 
-export function setProperty<T extends keyof TreeItem>(
-  items: TreeItems,
+export function setProperty(
+  items: any,
   id: string,
-  property: T,
-  setter: (value: TreeItem[T]) => TreeItem[T]
+  property: any,
+  setter: (value: TreeItem[]) => any
 ) {
   for (const item of items) {
     if (item.id === id) {
