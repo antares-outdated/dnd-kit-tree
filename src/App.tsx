@@ -19,7 +19,7 @@ export default function App() {
   return (
     <div className="App">
       <Wrapper>
-        <SortableTree collapsible indicator removable />
+        <SortableTree indicator />
       </Wrapper>
     </div>
   );

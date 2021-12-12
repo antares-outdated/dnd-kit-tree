@@ -3,20 +3,13 @@ import { createPortal } from "react-dom";
 import {
   DndContext,
   closestCenter,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
   DragStartEvent,
   DragOverlay,
   DragMoveEvent,
   DragEndEvent,
   DragOverEvent,
-  LayoutMeasuring,
-  LayoutMeasuringStrategy,
   DropAnimation,
   defaultDropAnimation,
-  Modifier,
 } from "@dnd-kit/core";
 import {
   SortableContext,
@@ -29,7 +22,6 @@ import {
   flattenTree,
   getProjection,
   getChildCount,
-  removeItem,
   removeChildrenOf,
   setProperty,
 } from "./utilities";
@@ -64,30 +56,13 @@ const initialItems: TreeItems = [
   },
 ];
 
-const layoutMeasuring: Partial<LayoutMeasuring> = {
-  strategy: LayoutMeasuringStrategy.Always,
-};
-
-const dropAnimation: DropAnimation = {
-  ...defaultDropAnimation,
-  dragSourceOpacity: 0.5,
-};
-
-interface Props {
-  collapsible?: any;
-  defaultItems?: TreeItems;
-  indentationWidth?: number;
-  indicator?: any;
-  removable?: any;
-}
-
 export default function SortableTree({
   collapsible,
   defaultItems = initialItems,
   indicator,
   indentationWidth = 50,
   removable,
-}: Props) {
+}: any) {
   const [items, setItems] = useState(() => defaultItems);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [overId, setOverId] = useState<string | null>(null);
@@ -120,8 +95,6 @@ export default function SortableTree({
     offset: offsetLeft,
   });
 
-  const sensors = useSensors(useSensor(PointerSensor));
-
   const sortedIds = useMemo(
     () => flattenedItems.map(({ id }) => id),
     [flattenedItems]
@@ -139,15 +112,11 @@ export default function SortableTree({
 
   return (
     <DndContext
-      sensors={sensors}
-      modifiers={indicator ? [adjustTranslate] : undefined}
       collisionDetection={closestCenter}
-      layoutMeasuring={layoutMeasuring}
       onDragStart={handleDragStart}
       onDragMove={handleDragMove}
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
-      onDragCancel={handleDragCancel}
     >
       <SortableContext items={sortedIds} strategy={verticalListSortingStrategy}>
         {flattenedItems.map(({ id, nested, collapsed, depth }) => (
@@ -164,11 +133,10 @@ export default function SortableTree({
                 ? () => handleCollapse(id)
                 : undefined
             }
-            onRemove={removable ? () => handleRemove(id) : undefined}
           />
         ))}
         {createPortal(
-          <DragOverlay dropAnimation={dropAnimation}>
+          <DragOverlay>
             {activeId && activeItem ? (
               <TreeItem
                 depth={activeItem.depth}
@@ -197,6 +165,7 @@ export default function SortableTree({
   }
 
   function handleDragOver({ over }: DragOverEvent) {
+    console.log(over);
     setOverId(over?.id ?? null);
   }
 
@@ -221,10 +190,6 @@ export default function SortableTree({
     }
   }
 
-  function handleDragCancel() {
-    resetState();
-  }
-
   function resetState() {
     setOverId(null);
     setActiveId(null);
@@ -232,11 +197,6 @@ export default function SortableTree({
 
     document.body.style.setProperty("cursor", "");
   }
-
-  function handleRemove(id: string) {
-    setItems((items) => removeItem(items, id));
-  }
-
   function handleCollapse(id: string) {
     setItems((items: any) =>
       setProperty(items, id, "collapsed", (value: any) => {
@@ -246,10 +206,3 @@ export default function SortableTree({
     );
   }
 }
-
-const adjustTranslate: Modifier = ({ transform }) => {
-  return {
-    ...transform,
-    y: transform.y - 25,
-  };
-};
